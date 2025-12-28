@@ -1,0 +1,9 @@
+[submodule "pwa-client"]
+	path = pwa-client
+	url = https://github.com/Justinosh06/BioInsight-PWA.git
+[submodule "central-dashboard"]
+	path = central-dashboard
+	url = https://github.com/Justinosh06/BioInsight-Dashboard.git
+[submodule "backend"]
+	path = backend
+	url = https://github.com/Justinosh06/BioInsight-Backend.git
