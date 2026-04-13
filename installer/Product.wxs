@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="BioInsight" Language="1033" Version="1.0.0.0" Manufacturer="Ong Syu Hen" UpgradeCode="12345678-1234-1234-1234-123456789012">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of BioInsight is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="ProductFeature" Title="BioInsight Agricultural Monitoring" Level="1">
+      <ComponentRef Id="MainComponent" />
+      <ComponentRef Id="ShortcutsComponent" />
+    </Feature>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="BioInsight" />
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="BioInsight"/>
+      </Directory>
+      <Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>
+
+    <!-- Main Component - just the install.bat that will extract and setup -->
+    <Component Id="MainComponent" Guid="*" Directory="INSTALLFOLDER">
+      <File Id="InstallBat" Source="dist\BioInsight_Deploy\install.bat" KeyPath="yes" />
+      <File Id="StartBat" Source="dist\BioInsight_Deploy\start.bat" />
+    </Component>
+
+    <!-- Shortcuts -->
+    <Component Id="ShortcutsComponent" Guid="*" Directory="ApplicationProgramsFolder">
+      <Shortcut Id="StartShortcut" Name="Start BioInsight" Description="Start BioInsight Server"
+                Target="[#StartBat]" WorkingDirectory="INSTALLFOLDER" />
+      <Shortcut Id="InstallShortcut" Name="Install BioInsight" Description="Install BioInsight Dependencies"
+                Target="[#InstallBat]" WorkingDirectory="INSTALLFOLDER" />
+      <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+      <RegistryValue Root="HKCU" Key="Software\BioInsight" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+    </Component>
+
+    <!-- Custom Action to run install.bat after install -->
+    <CustomAction Id="RunInstall" Directory="INSTALLFOLDER" ExeCommand="[INSTALLFOLDER]install.bat" Execute="deferred" Return="ignore" Impersonate="no"/>
+    <InstallExecuteSequence>
+      <Custom Action="RunInstall" After="InstallFiles">NOT Installed</Custom>
+    </InstallExecuteSequence>
+
+    <!-- UI Configuration -->
+    <UIRef Id="WixUI_InstallDir" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+  </Product>
+</Wix>
